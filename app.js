@@ -2,6 +2,9 @@
 // Conexión con Supabase
 // ─────────────────────────────────────────
 
+const SUPABASE_URL = 'https://ubeczgpuhspsocrvtrgx.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_CyFTKCI-6k35XfvqDngV-w_ehNaPkMH';
+
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
