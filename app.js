@@ -3,9 +3,10 @@
 // ─────────────────────────────────────────
 
 const hoy = new Date();
-let mesActual = hoy.getMonth();
-let añoActual = hoy.getFullYear();
-let eventos   = [];
+let mesActual   = hoy.getMonth();
+let añoActual   = hoy.getFullYear();
+let eventos     = [];
+let idEditando  = null;   // null = nuevo evento, número = editando uno existente
 
 // ─────────────────────────────────────────
 // Nombres de meses y emojis por tipo
@@ -68,8 +69,7 @@ function mostrarCalendario() {
       añoActual === hoy.getFullYear();
     if (esHoy) celda.classList.add('hoy');
 
-    // Punto azul si tiene eventos
-    const fechaDelDia = formatearFecha(añoActual, mesActual + 1, dia);
+    const fechaDelDia  = formatearFecha(añoActual, mesActual + 1, dia);
     const tieneEventos = eventos.some(e => e.fecha === fechaDelDia);
     if (tieneEventos) {
       const punto = document.createElement('div');
@@ -77,9 +77,7 @@ function mostrarCalendario() {
       celda.appendChild(punto);
     }
 
-    // Al pulsar un día → abrir panel de eventos
     celda.addEventListener('click', () => abrirPanelDia(dia));
-
     calendario.appendChild(celda);
   }
 }
@@ -91,11 +89,9 @@ function mostrarCalendario() {
 function abrirPanelDia(dia) {
   const fecha = formatearFecha(añoActual, mesActual + 1, dia);
 
-  // Título del panel: "27 Agosto 2026"
   document.getElementById('titulo-dia').textContent =
     `${dia} ${MESES[mesActual]} ${añoActual}`;
 
-  // Filtra los eventos de ese día y los ordena por hora
   const eventosDelDia = eventos
     .filter(e => e.fecha === fecha)
     .sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
@@ -122,11 +118,16 @@ function abrirPanelDia(dia) {
         </div>
       `;
 
+      // Al pulsar el evento → abre el formulario para editarlo
+      item.addEventListener('click', () => {
+        cerrarPanelDia();
+        abrirPanelEditar(evento);
+      });
+
       lista.appendChild(item);
     });
   }
 
-  // Muestra el panel (reutiliza el overlay del formulario)
   document.getElementById('panel-dia').classList.remove('oculto');
   document.getElementById('panel-overlay').classList.remove('oculto');
 }
@@ -155,40 +156,73 @@ document.getElementById('btn-siguiente').addEventListener('click', () => {
 });
 
 // ─────────────────────────────────────────
-// Abrir y cerrar el formulario
+// Abrir formulario — modo NUEVO evento
 // ─────────────────────────────────────────
 
 function abrirPanel() {
-  document.getElementById('panel-formulario').classList.remove('oculto');
-  document.getElementById('panel-overlay').classList.remove('oculto');
+  idEditando = null;   // modo nuevo
+
+  document.getElementById('panel-cabecera').querySelector('h3').textContent = 'Nuevo evento';
+  document.getElementById('btn-guardar').textContent  = 'Guardar evento';
+  document.getElementById('btn-eliminar').classList.add('oculto');
+  document.getElementById('form-evento').reset();
+
   document.getElementById('input-fecha').value =
     formatearFecha(hoy.getFullYear(), hoy.getMonth() + 1, hoy.getDate());
+
+  document.getElementById('panel-formulario').classList.remove('oculto');
+  document.getElementById('panel-overlay').classList.remove('oculto');
 }
+
+// ─────────────────────────────────────────
+// Abrir formulario — modo EDITAR evento
+// ─────────────────────────────────────────
+
+function abrirPanelEditar(evento) {
+  idEditando = evento.id;   // guardamos qué evento estamos editando
+
+  document.getElementById('panel-cabecera').querySelector('h3').textContent = 'Editar evento';
+  document.getElementById('btn-guardar').textContent = 'Guardar cambios';
+  document.getElementById('btn-eliminar').classList.remove('oculto');
+
+  // Rellena el formulario con los datos del evento
+  document.getElementById('input-nombre').value      = evento.titulo;
+  document.getElementById('input-fecha').value       = evento.fecha;
+  document.getElementById('input-hora-inicio').value = evento.hora_inicio;
+  document.getElementById('input-hora-fin').value    = evento.hora_fin;
+  document.getElementById('input-tipo').value        = evento.tipo;
+
+  document.getElementById('panel-formulario').classList.remove('oculto');
+  document.getElementById('panel-overlay').classList.remove('oculto');
+}
+
+// ─────────────────────────────────────────
+// Cerrar formulario
+// ─────────────────────────────────────────
 
 function cerrarPanel() {
   document.getElementById('panel-formulario').classList.add('oculto');
   document.getElementById('panel-overlay').classList.add('oculto');
   document.getElementById('form-evento').reset();
+  idEditando = null;
 }
 
 document.getElementById('btn-añadir').addEventListener('click', abrirPanel);
 document.getElementById('btn-cerrar-panel').addEventListener('click', cerrarPanel);
 
-// El overlay cierra cualquier panel abierto
 document.getElementById('panel-overlay').addEventListener('click', () => {
   cerrarPanel();
   cerrarPanelDia();
 });
 
 // ─────────────────────────────────────────
-// Guardar evento
+// Guardar: crea o actualiza el evento
 // ─────────────────────────────────────────
 
 document.getElementById('form-evento').addEventListener('submit', (e) => {
   e.preventDefault();
 
-  const nuevoEvento = {
-    id:          Date.now(),
+  const datosFormulario = {
     titulo:      document.getElementById('input-nombre').value,
     fecha:       document.getElementById('input-fecha').value,
     hora_inicio: document.getElementById('input-hora-inicio').value,
@@ -196,7 +230,31 @@ document.getElementById('form-evento').addEventListener('submit', (e) => {
     tipo:        document.getElementById('input-tipo').value,
   };
 
-  eventos.push(nuevoEvento);
+  if (idEditando === null) {
+    // Modo nuevo: añadir al array
+    eventos.push({ id: Date.now(), ...datosFormulario });
+  } else {
+    // Modo editar: reemplazar el evento existente
+    eventos = eventos.map(e =>
+      e.id === idEditando ? { id: idEditando, ...datosFormulario } : e
+    );
+  }
+
+  cerrarPanel();
+  mostrarCalendario();
+});
+
+// ─────────────────────────────────────────
+// Eliminar evento
+// ─────────────────────────────────────────
+
+document.getElementById('btn-eliminar').addEventListener('click', () => {
+  if (idEditando === null) return;
+
+  const confirmar = confirm('¿Eliminar este evento?');
+  if (!confirmar) return;
+
+  eventos = eventos.filter(e => e.id !== idEditando);
   cerrarPanel();
   mostrarCalendario();
 });
