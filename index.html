@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Universidad</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- Cabecera -->
+    <header>
+      <h1>📅 Mi Universidad</h1>
+    </header>
+
+    <!-- Navegación entre meses -->
+    <div id="nav-meses">
+      <button id="btn-anterior">←</button>
+      <h2 id="titulo-mes">Septiembre 2026</h2>
+      <button id="btn-siguiente">→</button>
+    </div>
+
+    <!-- Días de la semana -->
+    <div id="dias-semana">
+      <span>L</span>
+      <span>M</span>
+      <span>X</span>
+      <span>J</span>
+      <span>V</span>
+      <span>S</span>
+      <span>D</span>
+    </div>
+
+    <!-- Cuadrícula del calendario -->
+    <div id="calendario"></div>
+
+    <!-- Botón añadir evento -->
+    <button id="btn-añadir">+ Añadir evento</button>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
