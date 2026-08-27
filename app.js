@@ -1,4 +1,11 @@
 // ─────────────────────────────────────────
+// Conexión con Supabase
+// ─────────────────────────────────────────
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ─────────────────────────────────────────
 // Estado global
 // ─────────────────────────────────────────
 
@@ -29,23 +36,16 @@ const EMOJIS = {
 // ─────────────────────────────────────────
 
 const horario = [
-  // Sis. Elec. Digitales (SED)
-  { nombre: 'Sis. Elec. Digitales', dia: 1, inicio: '12:00', fin: '14:00', aula: 'B22', color: '#d4e5f7' },
-  { nombre: 'Sis. Elec. Digitales', dia: 2, inicio: '12:00', fin: '14:00', aula: 'B22', color: '#d4e5f7' },
-  { nombre: 'Sis. Elec. Digitales', dia: 3, inicio: '10:30', fin: '11:30', aula: 'B22', color: '#d4e5f7' },
-
-  // Ing. Control
-  { nombre: 'Ing. Control', dia: 3, inicio: '09:30', fin: '10:30', aula: 'B22', color: '#ffd4de' },
-  { nombre: 'Ing. Control', dia: 4, inicio: '12:00', fin: '14:00', aula: 'B22', color: '#ffd4de' },
-  { nombre: 'Ing. Control', dia: 5, inicio: '09:30', fin: '11:30', aula: 'B22', color: '#ffd4de' },
-
-  // T. Máquinas Mecanismos (TMM)
+  { nombre: 'Sis. Elec. Digitales',   dia: 1, inicio: '12:00', fin: '14:00', aula: 'B22', color: '#d4e5f7' },
+  { nombre: 'Sis. Elec. Digitales',   dia: 2, inicio: '12:00', fin: '14:00', aula: 'B22', color: '#d4e5f7' },
+  { nombre: 'Sis. Elec. Digitales',   dia: 3, inicio: '10:30', fin: '11:30', aula: 'B22', color: '#d4e5f7' },
+  { nombre: 'Ing. Control',           dia: 3, inicio: '09:30', fin: '10:30', aula: 'B22', color: '#ffd4de' },
+  { nombre: 'Ing. Control',           dia: 4, inicio: '12:00', fin: '14:00', aula: 'B22', color: '#ffd4de' },
+  { nombre: 'Ing. Control',           dia: 5, inicio: '09:30', fin: '11:30', aula: 'B22', color: '#ffd4de' },
   { nombre: 'T. Máquinas Mecanismos', dia: 2, inicio: '15:00', fin: '17:00', aula: 'B31', color: '#d4f0e0' },
   { nombre: 'T. Máquinas Mecanismos', dia: 3, inicio: '16:00', fin: '17:00', aula: 'B31', color: '#d4f0e0' },
-
-  // Regulación Automática
-  { nombre: 'Regulación Automática', dia: 4, inicio: '17:30', fin: '19:30', aula: 'B31', color: '#ffe4cc' },
-  { nombre: 'Regulación Automática', dia: 5, inicio: '15:00', fin: '17:00', aula: 'B31', color: '#ffe4cc' },
+  { nombre: 'Regulación Automática',  dia: 4, inicio: '17:30', fin: '19:30', aula: 'B31', color: '#ffe4cc' },
+  { nombre: 'Regulación Automática',  dia: 5, inicio: '15:00', fin: '17:00', aula: 'B31', color: '#ffe4cc' },
 ];
 
 // ─────────────────────────────────────────
@@ -56,6 +56,96 @@ function formatearFecha(año, mes, dia) {
   const mm = String(mes).padStart(2, '0');
   const dd = String(dia).padStart(2, '0');
   return `${año}-${mm}-${dd}`;
+}
+
+// ─────────────────────────────────────────
+// Supabase: cargar todos los eventos
+// ─────────────────────────────────────────
+
+async function cargarEventos() {
+  const { data, error } = await db.from('events').select('*');
+
+  if (error) {
+    console.error('Error cargando eventos:', error);
+    return;
+  }
+
+  // Guardamos los datos en nuestro formato interno
+  eventos = data.map(e => ({
+    id:          e.id,
+    titulo:      e.title,
+    fecha:       e.date,
+    hora_inicio: e.start_time,
+    hora_fin:    e.end_time || '',
+    tipo:        e.type || 'otro'
+  }));
+
+  mostrarCalendario();
+}
+
+// ─────────────────────────────────────────
+// Supabase: guardar evento nuevo
+// ─────────────────────────────────────────
+
+async function crearEvento(datos) {
+  const { data, error } = await db.from('events').insert({
+    title:      datos.titulo,
+    date:       datos.fecha,
+    start_time: datos.hora_inicio,
+    end_time:   datos.hora_fin || null,
+    type:       datos.tipo
+  }).select();
+
+  if (error) { console.error('Error guardando:', error); return; }
+
+  eventos.push({
+    id:          data[0].id,
+    titulo:      data[0].title,
+    fecha:       data[0].date,
+    hora_inicio: data[0].start_time,
+    hora_fin:    data[0].end_time || '',
+    tipo:        data[0].type
+  });
+
+  cerrarPanel();
+  mostrarCalendario();
+}
+
+// ─────────────────────────────────────────
+// Supabase: actualizar evento existente
+// ─────────────────────────────────────────
+
+async function actualizarEvento(id, datos) {
+  const { error } = await db.from('events').update({
+    title:      datos.titulo,
+    date:       datos.fecha,
+    start_time: datos.hora_inicio,
+    end_time:   datos.hora_fin || null,
+    type:       datos.tipo
+  }).eq('id', id);
+
+  if (error) { console.error('Error actualizando:', error); return; }
+
+  eventos = eventos.map(e =>
+    e.id === id ? { id, ...datos } : e
+  );
+
+  cerrarPanel();
+  mostrarCalendario();
+}
+
+// ─────────────────────────────────────────
+// Supabase: eliminar evento
+// ─────────────────────────────────────────
+
+async function eliminarEvento(id) {
+  const { error } = await db.from('events').delete().eq('id', id);
+
+  if (error) { console.error('Error eliminando:', error); return; }
+
+  eventos = eventos.filter(e => e.id !== id);
+  cerrarPanel();
+  mostrarCalendario();
 }
 
 // ─────────────────────────────────────────
@@ -238,7 +328,7 @@ document.getElementById('btn-siguiente').addEventListener('click', () => {
 });
 
 // ─────────────────────────────────────────
-// Formulario: abrir / cerrar
+// Formulario: abrir modo nuevo
 // ─────────────────────────────────────────
 
 function abrirPanel() {
@@ -253,6 +343,10 @@ function abrirPanel() {
   document.getElementById('panel-overlay').classList.remove('oculto');
 }
 
+// ─────────────────────────────────────────
+// Formulario: abrir modo editar
+// ─────────────────────────────────────────
+
 function abrirPanelEditar(evento) {
   idEditando = evento.id;
   document.getElementById('panel-cabecera').querySelector('h3').textContent = 'Editar evento';
@@ -266,6 +360,10 @@ function abrirPanelEditar(evento) {
   document.getElementById('panel-formulario').classList.remove('oculto');
   document.getElementById('panel-overlay').classList.remove('oculto');
 }
+
+// ─────────────────────────────────────────
+// Formulario: cerrar
+// ─────────────────────────────────────────
 
 function cerrarPanel() {
   document.getElementById('panel-formulario').classList.add('oculto');
@@ -282,7 +380,7 @@ document.getElementById('panel-overlay').addEventListener('click', () => {
 });
 
 // ─────────────────────────────────────────
-// Guardar evento
+// Enviar formulario: crear o actualizar
 // ─────────────────────────────────────────
 
 document.getElementById('form-evento').addEventListener('submit', (e) => {
@@ -297,15 +395,10 @@ document.getElementById('form-evento').addEventListener('submit', (e) => {
   };
 
   if (idEditando === null) {
-    eventos.push({ id: Date.now(), ...datos });
+    crearEvento(datos);
   } else {
-    eventos = eventos.map(e =>
-      e.id === idEditando ? { id: idEditando, ...datos } : e
-    );
+    actualizarEvento(idEditando, datos);
   }
-
-  cerrarPanel();
-  mostrarCalendario();
 });
 
 // ─────────────────────────────────────────
@@ -314,13 +407,11 @@ document.getElementById('form-evento').addEventListener('submit', (e) => {
 
 document.getElementById('btn-eliminar').addEventListener('click', () => {
   if (!confirm('¿Eliminar este evento?')) return;
-  eventos = eventos.filter(e => e.id !== idEditando);
-  cerrarPanel();
-  mostrarCalendario();
+  eliminarEvento(idEditando);
 });
 
 // ─────────────────────────────────────────
-// Arranque
+// Arranque: carga eventos desde Supabase
 // ─────────────────────────────────────────
 
-mostrarCalendario();
+cargarEventos();
