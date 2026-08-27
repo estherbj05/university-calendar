@@ -1,9 +1,5 @@
-/* --- Estilos generales --- */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* --- Generales --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   font-family: 'Segoe UI', sans-serif;
@@ -18,17 +14,39 @@ body {
 }
 
 /* --- Cabecera --- */
-header {
-  text-align: center;
-  margin-bottom: 24px;
+header { text-align: center; margin-bottom: 20px; }
+header h1 { font-size: 1.6rem; color: #2c3e7a; }
+
+/* --- Pestañas --- */
+#tabs {
+  display: flex;
+  gap: 6px;
+  background-color: #e2eaf2;
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 20px;
 }
 
-header h1 {
-  font-size: 1.6rem;
+.tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: none;
+  color: #7a8ba0;
+  font-weight: 500;
+}
+
+.tab.activo {
+  background-color: white;
   color: #2c3e7a;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
-/* --- Navegación entre meses --- */
+/* --- Navegación meses --- */
 #nav-meses {
   display: flex;
   justify-content: space-between;
@@ -69,7 +87,7 @@ header h1 {
   font-size: 0.85rem;
 }
 
-/* --- Cuadrícula de días --- */
+/* --- Cuadrícula calendario --- */
 #calendario {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -89,20 +107,21 @@ header h1 {
   transition: background-color 0.2s;
 }
 
-#calendario .dia:hover {
-  background-color: #dce8f5;
-}
+#calendario .dia:hover { background-color: #dce8f5; }
 
-/* Día de hoy resaltado */
 #calendario .dia.hoy {
   background-color: #2c3e7a;
   color: white;
   font-weight: bold;
 }
 
-/* Celda vacía */
-#calendario .vacio {
-  aspect-ratio: 1;
+#calendario .vacio { aspect-ratio: 1; }
+
+.punto-evento {
+  width: 5px;
+  height: 5px;
+  background-color: #2c3e7a;
+  border-radius: 50%;
 }
 
 /* --- Botón añadir evento --- */
@@ -119,27 +138,72 @@ header h1 {
   cursor: pointer;
 }
 
-#btn-añadir:hover {
-  background-color: #1e2f5e;
+#btn-añadir:hover { background-color: #1e2f5e; }
+
+/* --- Vista horario --- */
+.dia-horario { margin-bottom: 24px; }
+
+.dia-horario h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #7a8ba0;
+  margin-bottom: 10px;
+  padding-left: 4px;
 }
 
-/* --- Punto indicador de evento --- */
-.punto-evento {
-  width: 5px;
-  height: 5px;
-  background-color: #2c3e7a;
-  border-radius: 50%;
+.clase-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  margin-bottom: 8px;
 }
 
-/* --- Panel formulario --- */
+.clase-hora {
+  font-size: 0.78rem;
+  color: rgba(0,0,0,0.45);
+  font-weight: 600;
+  min-width: 72px;
+  line-height: 1.5;
+}
+
+.clase-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.clase-nombre {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: rgba(0,0,0,0.7);
+}
+
+.clase-aula {
+  font-size: 0.8rem;
+  color: rgba(0,0,0,0.4);
+}
+
+.sin-clases {
+  color: #c0ccd8;
+  font-size: 0.9rem;
+  padding: 4px 0;
+}
+
+/* --- Panels y formulario --- */
+.oculto { display: none; }
+
 #panel-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0,0,0,0.4);
   z-index: 10;
 }
 
-#panel-formulario {
+#panel-formulario,
+#panel-dia {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -151,21 +215,27 @@ header h1 {
   padding: 24px 20px;
   z-index: 20;
   box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  max-height: 85vh;
+  overflow-y: auto;
 }
 
-#panel-cabecera {
+#panel-cabecera,
+#panel-cabecera-dia {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-#panel-cabecera h3 {
+#panel-cabecera h3,
+#panel-cabecera-dia h3 {
   font-size: 1.1rem;
   color: #2c3e7a;
+  text-transform: capitalize;
 }
 
-#btn-cerrar-panel {
+#btn-cerrar-panel,
+#btn-cerrar-dia {
   background: none;
   border: none;
   font-size: 1.2rem;
@@ -210,95 +280,8 @@ header h1 {
   cursor: pointer;
 }
 
-#btn-guardar:hover {
-  background-color: #1e2f5e;
-}
+#btn-guardar:hover { background-color: #1e2f5e; }
 
-/* Clase para ocultar elementos */
-.oculto {
-  display: none;
-}
-
-/* --- Panel del día --- */
-#panel-dia {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  max-width: 480px;
-  margin: 0 auto;
-  background: white;
-  border-radius: 20px 20px 0 0;
-  padding: 24px 20px;
-  z-index: 20;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
-#panel-cabecera-dia {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-#panel-cabecera-dia h3 {
-  font-size: 1.1rem;
-  color: #2c3e7a;
-  text-transform: capitalize;
-}
-
-#btn-cerrar-dia {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  color: #7a8ba0;
-}
-
-/* --- Cada evento en la lista --- */
-.evento-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 14px 0;
-  border-bottom: 1px solid #f0f4f8;
-}
-
-.evento-item:last-child {
-  border-bottom: none;
-}
-
-.evento-emoji {
-  font-size: 1.4rem;
-}
-
-.evento-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.evento-hora {
-  font-size: 0.8rem;
-  color: #7a8ba0;
-}
-
-.evento-titulo {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1a1a2e;
-}
-
-/* Mensaje cuando no hay eventos */
-#lista-eventos p {
-  color: #7a8ba0;
-  text-align: center;
-  padding: 20px 0;
-}
-
-/* --- Botón eliminar evento --- */
 #btn-eliminar {
   display: block;
   width: 100%;
@@ -312,18 +295,24 @@ header h1 {
   cursor: pointer;
 }
 
-#btn-eliminar:hover {
-  background-color: #e74c3c;
-  color: white;
-}
+#btn-eliminar:hover { background-color: #e74c3c; color: white; }
 
-/* Evento pulsable en la lista */
+/* --- Eventos en panel día --- */
 .evento-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f4f8;
   cursor: pointer;
 }
 
-.evento-item:hover {
-  background-color: #f0f4f8;
-  border-radius: 10px;
-  padding-left: 8px;
-}
+.evento-item:last-child { border-bottom: none; }
+.evento-item:hover { background-color: #f0f4f8; border-radius: 10px; padding-left: 8px; }
+.evento-emoji { font-size: 1.4rem; }
+
+.evento-info { display: flex; flex-direction: column; gap: 2px; }
+.evento-hora { font-size: 0.8rem; color: #7a8ba0; }
+.evento-titulo { font-size: 1rem; font-weight: 600; color: #1a1a2e; }
+
+#lista-eventos p { color: #7a8ba0; text-align: center; padding: 20px 0; }

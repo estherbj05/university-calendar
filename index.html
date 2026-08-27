@@ -12,43 +12,56 @@
 
     <!-- Cabecera -->
     <header>
-      <h1>📅 Mi Universidad</h1>
+      <h1>Universidad</h1>
     </header>
 
-    <!-- Navegación entre meses -->
-    <div id="nav-meses">
-      <button id="btn-anterior">←</button>
-      <h2 id="titulo-mes"></h2>
-      <button id="btn-siguiente">→</button>
+    <!-- Pestañas de navegación -->
+    <div id="tabs">
+      <button class="tab activo" data-vista="calendario">Calendario</button>
+      <button class="tab" data-vista="horario">Horario</button>
     </div>
 
-    <!-- Días de la semana -->
-    <div id="dias-semana">
-      <span>L</span><span>M</span><span>X</span>
-      <span>J</span><span>V</span><span>S</span><span>D</span>
+    <!-- ======================== -->
+    <!-- VISTA: Calendario        -->
+    <!-- ======================== -->
+    <div id="vista-calendario">
+
+      <div id="nav-meses">
+        <button id="btn-anterior">←</button>
+        <h2 id="titulo-mes"></h2>
+        <button id="btn-siguiente">→</button>
+      </div>
+
+      <div id="dias-semana">
+        <span>L</span><span>M</span><span>X</span>
+        <span>J</span><span>V</span><span>S</span><span>D</span>
+      </div>
+
+      <div id="calendario"></div>
+
+      <button id="btn-añadir">+ Añadir evento</button>
+
     </div>
 
-    <!-- Cuadrícula del calendario -->
-    <div id="calendario"></div>
-
-    <!-- Botón añadir evento -->
-    <button id="btn-añadir">+ Añadir evento</button>
+    <!-- ======================== -->
+    <!-- VISTA: Horario           -->
+    <!-- ======================== -->
+    <div id="vista-horario" class="oculto">
+      <div id="contenido-horario"></div>
+    </div>
 
   </div>
 
-  <!-- ================================ -->
-  <!-- Panel lateral: formulario        -->
-  <!-- ================================ -->
+  <!-- Fondo oscuro -->
   <div id="panel-overlay" class="oculto"></div>
 
+  <!-- Panel formulario evento -->
   <div id="panel-formulario" class="oculto">
     <div id="panel-cabecera">
       <h3>Nuevo evento</h3>
       <button id="btn-cerrar-panel">✕</button>
     </div>
-
     <form id="form-evento">
-
       <label for="input-nombre">Nombre del evento</label>
       <input type="text" id="input-nombre" placeholder="Ej: Laboratorio de Física" required />
 
@@ -71,22 +84,19 @@
         <option value="otro">Otro</option>
       </select>
 
-      
-<button type="submit" id="btn-guardar">Guardar evento</button>
-<button type="button" id="btn-eliminar" class="oculto">🗑 Eliminar evento</button>
-
+      <button type="submit" id="btn-guardar">Guardar evento</button>
+      <button type="button" id="btn-eliminar" class="oculto">🗑 Eliminar evento</button>
     </form>
   </div>
-<!-- ================================ -->
-<!-- Panel: eventos del día           -->
-<!-- ================================ -->
-<div id="panel-dia" class="oculto">
-  <div id="panel-cabecera-dia">
-    <h3 id="titulo-dia"></h3>
-    <button id="btn-cerrar-dia">✕</button>
+
+  <!-- Panel día -->
+  <div id="panel-dia" class="oculto">
+    <div id="panel-cabecera-dia">
+      <h3 id="titulo-dia"></h3>
+      <button id="btn-cerrar-dia">✕</button>
+    </div>
+    <div id="lista-eventos"></div>
   </div>
-  <div id="lista-eventos"></div>
-</div>
 
   <script src="app.js"></script>
 </body>
