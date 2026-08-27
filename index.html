@@ -18,19 +18,14 @@
     <!-- Navegación entre meses -->
     <div id="nav-meses">
       <button id="btn-anterior">←</button>
-      <h2 id="titulo-mes">Septiembre 2026</h2>
+      <h2 id="titulo-mes"></h2>
       <button id="btn-siguiente">→</button>
     </div>
 
     <!-- Días de la semana -->
     <div id="dias-semana">
-      <span>L</span>
-      <span>M</span>
-      <span>X</span>
-      <span>J</span>
-      <span>V</span>
-      <span>S</span>
-      <span>D</span>
+      <span>L</span><span>M</span><span>X</span>
+      <span>J</span><span>V</span><span>S</span><span>D</span>
     </div>
 
     <!-- Cuadrícula del calendario -->
@@ -39,6 +34,46 @@
     <!-- Botón añadir evento -->
     <button id="btn-añadir">+ Añadir evento</button>
 
+  </div>
+
+  <!-- ================================ -->
+  <!-- Panel lateral: formulario        -->
+  <!-- ================================ -->
+  <div id="panel-overlay" class="oculto"></div>
+
+  <div id="panel-formulario" class="oculto">
+    <div id="panel-cabecera">
+      <h3>Nuevo evento</h3>
+      <button id="btn-cerrar-panel">✕</button>
+    </div>
+
+    <form id="form-evento">
+
+      <label for="input-nombre">Nombre del evento</label>
+      <input type="text" id="input-nombre" placeholder="Ej: Laboratorio de Física" required />
+
+      <label for="input-fecha">Fecha</label>
+      <input type="date" id="input-fecha" required />
+
+      <label for="input-hora-inicio">Hora de inicio</label>
+      <input type="time" id="input-hora-inicio" required />
+
+      <label for="input-hora-fin">Hora de fin</label>
+      <input type="time" id="input-hora-fin" />
+
+      <label for="input-tipo">Tipo</label>
+      <select id="input-tipo">
+        <option value="clase">Clase</option>
+        <option value="laboratorio">Laboratorio</option>
+        <option value="examen">Examen</option>
+        <option value="entrega">Entrega</option>
+        <option value="reunion">Reunión</option>
+        <option value="otro">Otro</option>
+      </select>
+
+      <button type="submit" id="btn-guardar">Guardar evento</button>
+
+    </form>
   </div>
 
   <script src="app.js"></script>
