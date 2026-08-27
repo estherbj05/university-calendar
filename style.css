@@ -218,3 +218,82 @@ header h1 {
 .oculto {
   display: none;
 }
+
+/* --- Panel del día --- */
+#panel-dia {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px;
+  z-index: 20;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+#panel-cabecera-dia {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#panel-cabecera-dia h3 {
+  font-size: 1.1rem;
+  color: #2c3e7a;
+  text-transform: capitalize;
+}
+
+#btn-cerrar-dia {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #7a8ba0;
+}
+
+/* --- Cada evento en la lista --- */
+.evento-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.evento-item:last-child {
+  border-bottom: none;
+}
+
+.evento-emoji {
+  font-size: 1.4rem;
+}
+
+.evento-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.evento-hora {
+  font-size: 0.8rem;
+  color: #7a8ba0;
+}
+
+.evento-titulo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+/* Mensaje cuando no hay eventos */
+#lista-eventos p {
+  color: #7a8ba0;
+  text-align: center;
+  padding: 20px 0;
+}
